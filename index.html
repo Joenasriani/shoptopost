@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,6 +47,7 @@
                 radial-gradient(ellipse at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
         }
 
+        /* Header */
         .header {
             position: fixed; top: 0; left: 0; right: 0;
             z-index: 100; padding: 16px 0;
@@ -97,7 +97,9 @@
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white; padding: 10px 20px; border-radius: var(--radius);
         }
+        .nav-link-primary:hover { color: white; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); }
 
+        /* Hero */
         .hero { padding: 140px 0 80px; }
         .hero .container {
             max-width: 1200px; margin: 0 auto; padding: 0 24px;
@@ -162,9 +164,11 @@
             box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
         }
 
+        /* API Status Panel */
         .api-panel {
             background: var(--surface); border: 1px solid var(--border);
             border-radius: var(--radius-lg); padding: 20px;
+            margin-bottom: 24px;
         }
 
         .api-panel h3 {
@@ -193,7 +197,11 @@
         .api-status.active {
             background: rgba(16, 185, 129, 0.15); color: var(--success);
         }
+        .api-status.inactive {
+            background: rgba(113, 113, 122, 0.15); color: var(--text-dim);
+        }
 
+        /* Generator Section */
         .generator { padding: 60px 0; }
         .generator-card {
             background: var(--surface); border: 1px solid var(--border);
@@ -212,6 +220,7 @@
 
         .generator-header p { color: var(--text-muted); }
 
+        /* Form Styles */
         .generator-form {
             display: flex; flex-direction: column; gap: 28px;
         }
@@ -234,7 +243,7 @@
         .tab-btn {
             display: flex; align-items: center; gap: 8px;
             padding: 12px 20px; background: transparent;
-            border: none; border-radius: var(--radius-sm);
+            border: none; border-radius: var(--radius);
             color: var(--text-muted); font-size: 14px;
             font-weight: 500; cursor: pointer;
             transition: all 0.3s; flex: 1; justify-content: center;
@@ -242,6 +251,11 @@
 
         .tab-btn.active {
             background: var(--primary); color: white;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .tab-content { display: none; }
@@ -261,11 +275,14 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
 
+        .form-input::placeholder { color: var(--text-dim); }
+
         .input-hint {
             font-size: 13px; color: var(--text-dim);
             margin-top: 6px;
         }
 
+        /* File Upload */
         .file-upload {
             border: 2px dashed var(--border);
             border-radius: var(--radius-lg);
@@ -278,6 +295,20 @@
             background: rgba(99, 102, 241, 0.05);
         }
 
+        .file-upload svg {
+            color: var(--text-dim); margin-bottom: 16px;
+        }
+
+        .file-upload-text {
+            font-size: 16px; font-weight: 500;
+            color: var(--text); margin-bottom: 4px;
+        }
+
+        .file-upload-subtext {
+            font-size: 13px; color: var(--text-dim);
+        }
+
+        /* Form Row */
         .form-row {
             display: grid; grid-template-columns: 1fr 1fr;
             gap: 20px;
@@ -287,6 +318,11 @@
             .form-row { grid-template-columns: 1fr; }
         }
 
+        .form-group {
+            display: flex; flex-direction: column; gap: 8px;
+        }
+
+        /* Style Options */
         .style-options {
             display: grid; grid-template-columns: repeat(4, 1fr);
             gap: 12px;
@@ -311,19 +347,37 @@
             background: rgba(99, 102, 241, 0.1);
         }
 
+        .style-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
         .style-preview {
             width: 100%; aspect-ratio: 1;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius);
             margin-bottom: 12px;
         }
 
-        .style-preview.studio { background: linear-gradient(135deg, #f5f5f5, #dcdcdc); }
-        .style-preview.cafe { background: linear-gradient(135deg, #ffebdc, #c8a08c); }
-        .style-preview.tech { background: linear-gradient(135deg, #0a2850, #1e5a8c); }
-        .style-preview.gradient { background: linear-gradient(135deg, #f0f0ff, #c8d2ff); }
-        .style-preview.luxury { background: linear-gradient(135deg, #2a2a2a, #4a4035); }
-        .style-preview.nature { background: linear-gradient(135deg, #c8e6c9, #a5d6a7); }
-        .style-preview.minimal { background: linear-gradient(135deg, #fafafa, #e0e0e0); }
+        .style-preview.studio {
+            background: linear-gradient(135deg, #f5f5f5, #dcdcdc);
+        }
+        .style-preview.cafe {
+            background: linear-gradient(135deg, #ffebdc, #c8a08c);
+        }
+        .style-preview.tech {
+            background: linear-gradient(135deg, #0a2850, #1e5a8c);
+        }
+        .style-preview.gradient {
+            background: linear-gradient(135deg, #f0f0ff, #c8d2ff);
+        }
+        .style-preview.luxury {
+            background: linear-gradient(135deg, #2a2a2a, #4a4035);
+        }
+        .style-preview.nature {
+            background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+        }
+        .style-preview.minimal {
+            background: linear-gradient(135deg, #fafafa, #e0e0e0);
+        }
 
         .style-name {
             display: block; font-size: 14px;
@@ -331,8 +385,11 @@
             margin-bottom: 2px;
         }
 
-        .style-desc { font-size: 12px; color: var(--text-dim); }
+        .style-desc {
+            font-size: 12px; color: var(--text-dim);
+        }
 
+        /* API Toggle */
         .api-toggle {
             display: flex; align-items: center;
             gap: 12px; padding: 16px;
@@ -355,12 +412,162 @@
             margin-left: auto;
         }
 
+        /* Results */
+        .results-section {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-header {
+            display: flex; align-items: center;
+            justify-content: space-between; margin-bottom: 24px;
+        }
+
+        .results-header h3 { font-size: 20px; font-weight: 600; }
+
+        .metadata-card {
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px; margin-bottom: 24px;
+        }
+
+        .metadata-card h4 {
+            font-size: 12px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            color: var(--text-muted); margin-bottom: 12px;
+        }
+
+        .caption-text {
+            font-size: 15px; line-height: 1.6;
+            padding: 16px; background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius);
+            border-left: 3px solid var(--primary);
+        }
+
+        .images-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .images-grid { grid-template-columns: 1fr; }
+        }
+
+        .image-card {
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden; transition: all 0.3s;
+        }
+
+        .image-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .image-preview {
+            aspect-ratio: 4/3; background: #000;
+            display: flex; align-items: center;
+            justify-content: center; overflow: hidden;
+        }
+
+        .image-preview img {
+            width: 100%; height: 100%;
+            object-fit: contain;
+        }
+
+        .image-info {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+        }
+
+        .image-name {
+            font-size: 13px; font-weight: 500;
+        }
+
+        .btn-download {
+            padding: 8px 14px; font-size: 13px;
+            background: var(--surface);
+            color: var(--text); border: 1px solid var(--border);
+            border-radius: var(--radius);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-download:hover {
+            background: var(--surface-light);
+        }
+
+        .btn-sm {
+            padding: 10px 18px; font-size: 13px;
+        }
+
+        .btn-secondary {
+            background: var(--surface-light);
+            color: var(--text); border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Loading State */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--surface-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
         .footer {
             padding: 40px 0; border-top: 1px solid var(--border);
             text-align: center;
         }
 
-        .footer p { color: var(--text-dim); font-size: 14px; }
+        .footer p {
+            color: var(--text-dim); font-size: 14px;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -389,7 +596,8 @@
                 </h1>
                 <p class="hero-description">
                     Create stunning social media ads using completely free AI APIs. 
-                    No subscriptions, no credit cards - just powerful image generation.
+                    No subscriptions, no credit cards - just powerful image generation 
+                    for Instagram, Facebook, and more.
                 </p>
                 <a href="#generate" class="btn btn-primary">
                     <span>Start Creating Free</span>
@@ -401,7 +609,7 @@
 
             <div class="api-panel">
                 <h3>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                         <polyline points="22 4 12 14.01 9 11.01"/>
                     </svg>
@@ -409,16 +617,22 @@
                 </h3>
                 <div class="api-list">
                     <div class="api-item">
-                        <span class="api-name"><span>🎨</span> Pollinations.ai (Backgrounds)</span>
+                        <span class="api-name">
+                            <span>🎨</span> Pollinations.ai (Backgrounds)
+                        </span>
                         <span class="api-status active">✓ Unlimited</span>
                     </div>
                     <div class="api-item">
-                        <span class="api-name"><span>✂️</span> remove.bg (Optional)</span>
-                        <span class="api-status active">✓ 50/mo free</span>
+                        <span class="api-name">
+                            <span>✂️</span> remove.bg (Background Removal)
+                        </span>
+                        <span class="api-status inactive">⚠ API Key Required</span>
                     </div>
                     <div class="api-item">
-                        <span class="api-name"><span>⚡</span> ClipDrop (Optional)</span>
-                        <span class="api-status active">✓ 100/day free</span>
+                        <span class="api-name">
+                            <span>⚡</span> ClipDrop (Background Removal)
+                        </span>
+                        <span class="api-status inactive">⚠ API Key Required</span>
                     </div>
                 </div>
             </div>
@@ -433,7 +647,40 @@
                     <p>Using free AI APIs - no credit card required!</p>
                 </div>
 
-                <form class="generator-form">
+                <div id="alertContainer"></div>
+
+                <div class="loading" id="loadingSection">
+                    <div class="spinner"></div>
+                    <p style="color: var(--text-muted);">Generating your ad images...</p>
+                    <p style="font-size: 13px; color: var(--text-dim); margin-top: 8px;">This may take 10-20 seconds</p>
+                </div>
+
+                <div id="resultsSection" class="results-section hidden">
+                    <div class="results-header">
+                        <h3>🎉 Your Images Are Ready!</h3>
+                        <button onclick="resetForm()" class="btn btn-secondary btn-sm">Create New</button>
+                    </div>
+
+                    <div class="metadata-card" id="metadataCard">
+                        <h4>Suggested Caption</h4>
+                        <p class="caption-text" id="captionText"></p>
+                        <div style="margin-top: 16px;">
+                            <h4 style="margin-bottom: 12px;">Hashtags</h4>
+                            <div id="hashtagsContainer"></div>
+                        </div>
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                            <span style="font-size: 11px; color: var(--text-muted);">APIs Used:</span>
+                            <span style="font-size: 12px; color: var(--success);">
+                                Background: Pollinations.ai (Free), 
+                                Removal: <span id="removalApiStatus">None (Canvas Mode)</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="images-grid" id="imagesGrid"></div>
+                </div>
+
+                <form id="generatorForm" class="generator-form">
                     <div class="form-section">
                         <label class="form-label">Product Source</label>
                         <div class="input-tabs">
@@ -455,19 +702,20 @@
                         </div>
 
                         <div class="tab-content active" id="url-tab">
-                            <input type="url" name="url" placeholder="https://example.com/product" class="form-input">
-                            <span class="input-hint">We'll extract product images automatically</span>
+                            <input type="url" name="url" id="urlInput" placeholder="https://example.com/product-image.jpg" class="form-input">
+                            <span class="input-hint">Direct image URL works best (CORS enabled)</span>
                         </div>
 
                         <div class="tab-content" id="upload-tab">
-                            <div class="file-upload">
+                            <div class="file-upload" id="fileUpload">
+                                <input type="file" name="image" id="imageInput" accept=".png,.jpg,.jpeg,.webp" hidden>
                                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                                     <circle cx="8.5" cy="8.5" r="1.5"/>
                                     <polyline points="21 15 16 10 5 21"/>
                                 </svg>
-                                <p style="color: var(--text); font-weight: 500; margin-bottom: 4px;">Drag & drop your image here</p>
-                                <p style="color: var(--text-dim); font-size: 13px;">or click to browse (PNG, JPG, WEBP)</p>
+                                <p class="file-upload-text">Drag & drop your image here</p>
+                                <p class="file-upload-subtext">or click to browse (PNG, JPG, WEBP)</p>
                             </div>
                         </div>
                     </div>
@@ -475,11 +723,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Product Title (optional)</label>
-                            <input type="text" name="title" placeholder="e.g., Wireless Headphones" class="form-input">
+                            <input type="text" name="title" id="titleInput" placeholder="e.g., Wireless Headphones" class="form-input">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Price (optional)</label>
-                            <input type="text" name="price" placeholder="e.g., $49.99" class="form-input">
+                            <input type="text" name="price" id="priceInput" placeholder="e.g., $49.99" class="form-input">
                         </div>
                     </div>
 
@@ -546,14 +794,14 @@
                     </div>
 
                     <div class="api-toggle">
-                        <input type="checkbox" name="use_api_bg" id="use_api_bg" checked>
-                        <label for="use_api_bg">
+                        <input type="checkbox" name="use_api_bg" id="useApiBg" checked>
+                        <label for="useApiBg">
                             <strong>Use AI-generated backgrounds</strong> (Pollinations.ai - completely free!)
                         </label>
-                        <span class="note">Recommended</span>
+                        <span class="note">Recommended for unique results</span>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;" id="submitBtn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
                         </svg>
@@ -571,6 +819,7 @@
     </footer>
 
     <script>
+        // Tab switching
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const tabId = btn.dataset.tab;
@@ -582,6 +831,325 @@
                 });
             });
         });
+
+        // File upload
+        const fileUpload = document.getElementById('fileUpload');
+        const fileInput = document.getElementById('imageInput');
+        let uploadedImageData = null;
+
+        if (fileUpload && fileInput) {
+            fileUpload.addEventListener('click', () => fileInput.click());
+            
+            fileUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUpload.style.borderColor = 'var(--primary)';
+                fileUpload.style.background = 'rgba(99, 102, 241, 0.05)';
+            });
+
+            fileUpload.addEventListener('dragleave', () => {
+                fileUpload.style.borderColor = 'var(--border)';
+                fileUpload.style.background = 'transparent';
+            });
+
+            fileUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUpload.style.borderColor = 'var(--border)';
+                fileUpload.style.background = 'transparent';
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    handleFile(fileInput.files[0]);
+                }
+            });
+        }
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImageData = e.target.result;
+                fileUpload.querySelector('.file-upload-text').textContent = file.name;
+                fileUpload.querySelector('.file-upload-subtext').textContent = 'Click to change file';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Form submission
+        const form = document.getElementById('generatorForm');
+        const loadingSection = document.getElementById('loadingSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const alertContainer = document.getElementById('alertContainer');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous alerts
+            alertContainer.innerHTML = '';
+            
+            // Get form data
+            const formData = new FormData(form);
+            const url = document.getElementById('urlInput').value;
+            const title = document.getElementById('titleInput').value || 'Product';
+            const price = document.getElementById('priceInput').value;
+            const style = formData.get('background_style') || 'studio';
+            const useApiBg = document.getElementById('useApiBg').checked;
+
+            // Validation
+            const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+            if (activeTab === 'url' && !url) {
+                showAlert('Please enter a product image URL', 'error');
+                return;
+            }
+            if (activeTab === 'upload' && !uploadedImageData) {
+                showAlert('Please upload a product image', 'error');
+                return;
+            }
+
+            // Show loading
+            form.style.display = 'none';
+            loadingSection.classList.add('active');
+
+            try {
+                let productImage;
+                
+                // Get product image
+                if (activeTab === 'url') {
+                    productImage = await loadImage(url);
+                } else {
+                    productImage = await loadImage(uploadedImageData);
+                }
+
+                // Generate backgrounds and composite
+                const generatedImages = await generateAdImages(productImage, style, useApiBg, title);
+                
+                // Display results
+                displayResults(generatedImages, title, price);
+                
+            } catch (error) {
+                console.error(error);
+                showAlert('Error generating images: ' + error.message, 'error');
+                form.style.display = 'flex';
+                loadingSection.classList.remove('active');
+            }
+        });
+
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alertContainer.appendChild(alert);
+        }
+
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = src;
+            });
+        }
+
+        async function generateAdImages(productImg, style, useApiBg, title) {
+            const stylePrompts = {
+                studio: 'professional studio photography, seamless white background, soft lighting, product photography, high detail, 8k',
+                cafe: 'warm coffee shop interior, wooden table, morning light, cozy atmosphere, bokeh background, warm tones',
+                tech: 'futuristic tech background, neon blue lights, dark gradient, digital interface elements, modern technology',
+                gradient: 'soft pastel gradient background, purple pink blue tones, smooth blur, minimal clean, ethereal',
+                luxury: 'luxury dark marble background, gold accents, premium elegant, dramatic lighting, high end',
+                nature: 'outdoor nature setting, green grass, sunlight filtering through trees, fresh natural environment',
+                minimal: 'clean minimal white background, subtle shadows, simple geometric shapes, scandinavian design'
+            };
+
+            const backgrounds = [];
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size (square format for social media)
+            canvas.width = 1024;
+            canvas.height = 1024;
+
+            // Generate 4 variations
+            for (let i = 0; i < 4; i++) {
+                if (useApiBg) {
+                    // Use Pollinations.ai for free AI-generated backgrounds
+                    const prompt = encodeURIComponent(`${stylePrompts[style]}, variation ${i+1}, high quality, detailed`);
+                    const bgUrl = `https://image.pollinations.ai/prompt/${prompt}?width=1024&height=1024&nologo=true&seed=${Math.random()}`;
+                    
+                    try {
+                        const bgImg = await loadImage(bgUrl);
+                        ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+                    } catch (e) {
+                        // Fallback to colored background if API fails
+                        drawFallbackBackground(ctx, style, canvas.width, canvas.height);
+                    }
+                } else {
+                    drawFallbackBackground(ctx, style, canvas.width, canvas.height);
+                }
+
+                // Composite product image (centered, scaled to fit nicely)
+                const productSize = Math.min(canvas.width, canvas.height) * 0.6;
+                const aspectRatio = productImg.width / productImg.height;
+                let drawWidth, drawHeight;
+                
+                if (aspectRatio > 1) {
+                    drawWidth = productSize;
+                    drawHeight = productSize / aspectRatio;
+                } else {
+                    drawHeight = productSize;
+                    drawWidth = productSize * aspectRatio;
+                }
+                
+                const x = (canvas.width - drawWidth) / 2;
+                const y = (canvas.height - drawHeight) / 2 + 50; // Slightly lower
+                
+                // Add shadow
+                ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                ctx.shadowBlur = 20;
+                ctx.shadowOffsetY = 10;
+                
+                ctx.drawImage(productImg, x, y, drawWidth, drawHeight);
+                
+                // Reset shadow
+                ctx.shadowColor = 'transparent';
+                
+                // Add text overlay if title provided
+                if (title) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                    ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 48px Inter, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(title, canvas.width/2, canvas.height - 40);
+                }
+                
+                backgrounds.push(canvas.toDataURL('image/png'));
+            }
+            
+            return backgrounds;
+        }
+
+        function drawFallbackBackground(ctx, style, width, height) {
+            const gradients = {
+                studio: ['#f5f5f5', '#dcdcdc'],
+                cafe: ['#ffebdc', '#c8a08c'],
+                tech: ['#0a2850', '#1e5a8c'],
+                gradient: ['#f0f0ff', '#c8d2ff'],
+                luxury: ['#2a2a2a', '#4a4035'],
+                nature: ['#c8e6c9', '#a5d6a7'],
+                minimal: ['#fafafa', '#e0e0e0']
+            };
+            
+            const colors = gradients[style] || gradients.studio;
+            const grd = ctx.createLinearGradient(0, 0, width, height);
+            grd.addColorStop(0, colors[0]);
+            grd.addColorStop(1, colors[1]);
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, width, height);
+        }
+
+        function displayResults(images, title, price) {
+            loadingSection.classList.remove('active');
+            resultsSection.classList.remove('hidden');
+            
+            // Generate caption
+            const caption = generateCaption(title, price);
+            document.getElementById('captionText').textContent = caption.text;
+            
+            // Generate hashtags
+            const hashtags = generateHashtags(title);
+            const hashtagsContainer = document.getElementById('hashtagsContainer');
+            hashtagsContainer.innerHTML = '';
+            
+            for (const [platform, tags] of Object.entries(hashtags)) {
+                const div = document.createElement('div');
+                div.style.marginBottom = '8px';
+                div.innerHTML = `
+                    <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-right: 8px;">${platform}:</span>
+                    <span style="font-size: 12px; color: var(--text-dim);">${tags.join(' ')}</span>
+                `;
+                hashtagsContainer.appendChild(div);
+            }
+            
+            // Display images
+            const grid = document.getElementById('imagesGrid');
+            grid.innerHTML = '';
+            
+            const styleNames = ['Main Display', 'Angle View', 'Lifestyle', 'Detail Shot'];
+            
+            images.forEach((imgData, index) => {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                card.innerHTML = `
+                    <div class="image-preview">
+                        <img src="${imgData}" alt="Ad variant ${index + 1}">
+                    </div>
+                    <div class="image-info">
+                        <span class="image-name">${styleNames[index] || 'Variant ' + (index + 1)}</span>
+                        <button class="btn btn-download" onclick="downloadImage('${imgData}', 'ad_${title.replace(/\s+/g, '_').toLowerCase()}_${index + 1}.png')">
+                            Download
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateCaption(title, price) {
+            const hooks = [
+                `Transform your experience with our ${title}! ✨`,
+                `Meet your new favorite ${title} 🚀`,
+                `Upgrade your style with ${title} 💫`,
+                `The perfect ${title} you've been looking for 🎯`
+            ];
+            
+            const bodies = [
+                "Designed for those who refuse to compromise on quality.",
+                "Premium quality meets affordable pricing.",
+                "Join thousands of happy customers today!",
+                "Limited stock available - grab yours now!"
+            ];
+            
+            const cta = price ? `Get it now for just ${price}!` : "Shop now via link in bio! 👆";
+            
+            return {
+                text: `${hooks[Math.floor(Math.random() * hooks.length)]}\n\n${bodies[Math.floor(Math.random() * bodies.length)]}\n\n${cta}`
+            };
+        }
+
+        function generateHashtags(title) {
+            const cleanTitle = title.toLowerCase().replace(/[^a-z0-9]/g, '');
+            return {
+                Instagram: ['#shopping', '#musthave', '#newarrivals', `#${cleanTitle}`, '#deals', '#shopnow'],
+                Facebook: ['#ShopLocal', '#NewProduct', '#SpecialOffer'],
+                Twitter: ['#deal', '#shopping', '#buy']
+            };
+        }
+
+        function downloadImage(dataUrl, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = dataUrl;
+            link.click();
+        }
+
+        function resetForm() {
+            form.reset();
+            uploadedImageData = null;
+            fileUpload.querySelector('.file-upload-text').textContent = 'Drag & drop your image here';
+            fileUpload.querySelector('.file-upload-subtext').textContent = 'or click to browse (PNG, JPG, WEBP)';
+            form.style.display = 'flex';
+            resultsSection.classList.add('hidden');
+            alertContainer.innerHTML = '';
+            window.scrollTo({ top: document.getElementById('generate').offsetTop - 100, behavior: 'smooth' });
+        }
     </script>
 </body>
 </html>
