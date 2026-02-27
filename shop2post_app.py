@@ -11,17 +11,39 @@ import io
 import json
 import os
 import re
+import uuid
 from dataclasses import dataclass
 from typing import Dict, Iterable, List, Optional, Tuple
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
 from PIL import Image, ImageDraw, ImageFilter
 
+try:
+    from flask import Flask, flash, redirect, render_template, request, send_from_directory, url_for
+    from werkzeug.utils import secure_filename
+except ImportError:  # Flask is optional for CLI-only usage
+    Flask = None
+    flash = None
+    redirect = None
+    render_template = None
+    request = None
+    send_from_directory = None
+    url_for = None
+    secure_filename = None
+
 
 USER_AGENT = "Mozilla/5.0 (Shop2Post)"
 TIMEOUT = 15
 MIN_IMAGE_SIDE = 300
+OUTPUT_SIZES = {
+    "ad_instagram_portrait.png": (1080, 1350),
+    "ad_instagram_story.png": (1080, 1920),
+    "ad_instagram_square.png": (1080, 1080),
+    "ad_facebook_landscape.png": (1200, 628),
+}
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 
 
 @dataclass
@@ -29,6 +51,13 @@ class ProductData:
     title: Optional[str]
     price: Optional[str]
     image_urls: List[str]
+
+
+@dataclass
+class GenerationResult:
+    output_dir: str
+    metadata_path: str
+    metadata: Dict[str, object]
 
 
 def fetch_page(url: str) -> str:
@@ -223,7 +252,6 @@ def create_product_mask(image: Image.Image) -> Optional[Image.Image]:
 
 
 def resize_fill(image: Image.Image, target_size: Tuple[int, int]) -> Image.Image:
-    """Resizes and crops the image to fill the target size without borders."""
     src = image.convert("RGBA")
     sw, sh = src.size
     tw, th = target_size
@@ -235,11 +263,7 @@ def resize_fill(image: Image.Image, target_size: Tuple[int, int]) -> Image.Image
     return resized.crop((left, top, left + tw, top + th))
 
 
-def resize_fill_with_mask(
-    image: Image.Image,
-    mask: Image.Image,
-    target_size: Tuple[int, int],
-) -> Tuple[Image.Image, Image.Image]:
+def resize_fill_with_mask(image: Image.Image, mask: Image.Image, target_size: Tuple[int, int]) -> Tuple[Image.Image, Image.Image]:
     src = image.convert("RGBA")
     sw, sh = src.size
     tw, th = target_size
@@ -339,6 +363,166 @@ def ensure_dir(path: str) -> None:
     os.makedirs(path, exist_ok=True)
 
 
+def is_safe_url(url: str) -> bool:
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return False
+    return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+
+
+def allowed_file(filename: str) -> bool:
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def generate_ad_assets(
+    source_url: Optional[str],
+    image_path: Optional[str],
+    title_override: Optional[str],
+    price_override: Optional[str],
+    output_dir: str,
+    background_style: str,
+) -> GenerationResult:
+    if not source_url and not image_path:
+        raise ValueError("Provide a product URL or an image upload.")
+
+    product_data = ProductData(title=None, price=None, image_urls=[])
+    if source_url:
+        if not is_safe_url(source_url):
+            raise ValueError("URL must begin with http:// or https:// and include a valid host.")
+        html = fetch_page(source_url)
+        if html:
+            product_data = parse_product_data(html, source_url)
+        elif not image_path:
+            raise ValueError("Product page is inaccessible and no fallback image was provided.")
+
+    title = title_override or product_data.title or "Product"
+    price = price_override or product_data.price
+
+    best_img: Optional[Image.Image] = None
+    if product_data.image_urls:
+        best_img = choose_best_image(product_data.image_urls)
+
+    if not best_img and image_path:
+        try:
+            best_img = Image.open(image_path).convert("RGBA")
+        except OSError as exc:
+            raise ValueError(f"Unable to open local image: {exc}") from exc
+
+    if not best_img:
+        raise ValueError("No suitable image found from URL or uploaded file.")
+
+    mask = create_product_mask(best_img)
+
+    ensure_dir(output_dir)
+    for name, size in OUTPUT_SIZES.items():
+        composed = compose_ad_image(best_img, mask, size, background_style)
+        composed.save(os.path.join(output_dir, name))
+
+    metadata = {
+        "title": title,
+        "price": price,
+        "caption": build_caption(title, price),
+        "hashtags": build_hashtags(title),
+    }
+    metadata_path = os.path.join(output_dir, "ad_metadata.json")
+    with open(metadata_path, "w", encoding="utf-8") as file_obj:
+        json.dump(metadata, file_obj, indent=2)
+
+    return GenerationResult(output_dir=output_dir, metadata_path=metadata_path, metadata=metadata)
+
+
+def create_web_app() -> "Flask":
+    if Flask is None:
+        raise RuntimeError("Flask is not installed. Install flask to use web mode.")
+
+    app = Flask(__name__, template_folder="templates")
+    app.config["SECRET_KEY"] = "shop2post-dev-key"
+    app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
+    app.config["UPLOAD_FOLDER"] = os.path.join("web_runs", "uploads")
+    app.config["OUTPUT_FOLDER"] = os.path.join("web_runs", "outputs")
+    ensure_dir(app.config["UPLOAD_FOLDER"])
+    ensure_dir(app.config["OUTPUT_FOLDER"])
+
+    @app.route("/", methods=["GET", "POST"])
+    def index():
+        if request.method == "POST":
+            product_url = (request.form.get("url") or "").strip()
+            title_override = (request.form.get("title") or "").strip() or None
+            price_override = (request.form.get("price") or "").strip() or None
+            background_style = (request.form.get("background_style") or "studio").strip()
+            image_file = request.files.get("image")
+
+            upload_path = None
+            if image_file and image_file.filename:
+                safe_name = secure_filename(image_file.filename)
+                if not safe_name or not allowed_file(safe_name):
+                    flash("Unsupported file type. Use png, jpg, jpeg, or webp.")
+                    return redirect(url_for("index"))
+                run_id = uuid.uuid4().hex
+                upload_dir = os.path.join(app.config["UPLOAD_FOLDER"], run_id)
+                ensure_dir(upload_dir)
+                upload_path = os.path.join(upload_dir, safe_name)
+                image_file.save(upload_path)
+
+            run_id = uuid.uuid4().hex
+            output_dir = os.path.join(app.config["OUTPUT_FOLDER"], run_id)
+
+            try:
+                result = generate_ad_assets(
+                    source_url=product_url or None,
+                    image_path=upload_path,
+                    title_override=title_override,
+                    price_override=price_override,
+                    output_dir=output_dir,
+                    background_style=background_style,
+                )
+            except ValueError as exc:
+                flash(str(exc))
+                return redirect(url_for("index"))
+
+            image_files = sorted([name for name in os.listdir(result.output_dir) if name.endswith(".png")])
+            return render_template(
+                "index.html",
+                result={
+                    "run_id": run_id,
+                    "images": image_files,
+                    "metadata": result.metadata,
+                },
+            )
+
+        return render_template("index.html", result=None)
+
+    @app.route("/outputs/<run_id>/<path:filename>")
+    def download_output(run_id: str, filename: str):
+        safe_run = secure_filename(run_id)
+        safe_name = secure_filename(filename)
+        out_dir = os.path.join(app.config["OUTPUT_FOLDER"], safe_run)
+        return send_from_directory(out_dir, safe_name, as_attachment=False)
+
+    return app
+
+
+def run_cli(args: argparse.Namespace) -> int:
+    try:
+        result = generate_ad_assets(
+            source_url=args.url,
+            image_path=args.image_path,
+            title_override=args.title,
+            price_override=args.price,
+            output_dir=args.output,
+            background_style=args.background_style,
+        )
+    except ValueError as exc:
+        print(f"Error: {exc}")
+        return 1
+
+    for name, size in OUTPUT_SIZES.items():
+        print(f"Generated: {os.path.join(result.output_dir, name)} ({size[0]}x{size[1]})")
+    print(f"Metadata saved: {result.metadata_path}")
+    return 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate ad images from a product page or local image.")
     parser.add_argument("--url", help="Product page URL to scrape", default=None)
@@ -352,65 +536,17 @@ def main() -> None:
         default="studio",
         choices=["studio", "gradient", "cafe", "tech"],
     )
+    parser.add_argument("--web", action="store_true", help="Run the HTML wrapper web app")
+    parser.add_argument("--host", default="0.0.0.0", help="Host for web mode")
+    parser.add_argument("--port", type=int, default=8000, help="Port for web mode")
     args = parser.parse_args()
 
-    if not args.url and not args.image_path:
-        print("Error: either --url or --image-path must be provided.")
+    if args.web:
+        app = create_web_app()
+        app.run(host=args.host, port=args.port, debug=False)
         return
 
-    product_data = ProductData(title=None, price=None, image_urls=[])
-    if args.url:
-        html = fetch_page(args.url)
-        if not html:
-            print("Failed to fetch or parse the page; falling back to local image if provided.")
-        else:
-            product_data = parse_product_data(html, args.url)
-
-    title = args.title or product_data.title or "Product"
-    price = args.price or product_data.price
-
-    best_img: Optional[Image.Image] = None
-    if product_data.image_urls:
-        best_img = choose_best_image(product_data.image_urls)
-        if not best_img:
-            print("Could not download any usable image from the page; falling back to local image if provided.")
-
-    if not best_img and args.image_path:
-        try:
-            best_img = Image.open(args.image_path).convert("RGBA")
-        except OSError as exc:
-            print(f"Failed to open local image: {exc}")
-
-    if not best_img:
-        print("No image could be processed. Aborting.")
-        return
-
-    mask = create_product_mask(best_img)
-
-    sizes = {
-        "ad_instagram_portrait.png": (1080, 1350),
-        "ad_instagram_story.png": (1080, 1920),
-        "ad_instagram_square.png": (1080, 1080),
-        "ad_facebook_landscape.png": (1200, 628),
-    }
-
-    ensure_dir(args.output)
-    for name, size in sizes.items():
-        composed = compose_ad_image(best_img, mask, size, args.background_style)
-        out_path = os.path.join(args.output, name)
-        composed.save(out_path)
-        print(f"Generated: {out_path} ({size[0]}x{size[1]})")
-
-    metadata = {
-        "title": title,
-        "price": price,
-        "caption": build_caption(title, price),
-        "hashtags": build_hashtags(title),
-    }
-    meta_path = os.path.join(args.output, "ad_metadata.json")
-    with open(meta_path, "w", encoding="utf-8") as f:
-        json.dump(metadata, f, indent=2)
-    print(f"Metadata saved: {meta_path}")
+    raise SystemExit(run_cli(args))
 
 
 if __name__ == "__main__":

@@ -1,27 +1,34 @@
 # Shop2Post
 
-Shop2Post is a lightweight CLI that turns any e-commerce product page (or local product photo) into polished social-media ad visuals. The utility preserves the product appearance, replaces the background with clean, on-brand environments, and exports platform-ready PNGs with no text overlays.
+Shop2Post generates polished social-media ad visuals from e-commerce pages or local product images.
+It preserves product appearance, replaces/extends backgrounds, exports platform-ready PNGs, and writes editable caption metadata.
 
 ## Features
-- Scrape product title, price, and hero imagery from Shopify, WooCommerce, Amazon, and other product pages.
-- Automatic hero image selection based on size and aspect ratio scoring.
-- Simple product isolation to preserve the product pixels while replacing the background.
-- Ready-to-post sizes for Instagram, TikTok, Facebook, and LinkedIn.
-- JSON metadata output with caption + platform-specific hashtag suggestions.
+- Scrapes product title, price, and candidate images from HTML meta tags and JSON-LD (`og:title`, `product:price:amount`, structured `Product`).
+- Selects the best hero image using resolution + aspect scoring.
+- Attempts product isolation with alpha passthrough or corner-color background masking.
+- Generates ad assets (no text overlays) in these sizes:
+  - Instagram portrait: `1080x1350`
+  - Instagram story / TikTok: `1080x1920`
+  - Square (Instagram / X / LinkedIn): `1080x1080`
+  - Facebook landscape: `1200x628`
+- Produces `ad_metadata.json` with title, price, caption, and platform hashtag suggestions.
+- Includes an optional browser wrapper (`--web`) for form-based use.
 
 ## Requirements
 - Python 3.9+
 - `requests`
 - `beautifulsoup4`
 - `pillow`
+- `flask` (optional, for browser wrapper)
 
 Install dependencies:
 
 ```bash
-pip install requests beautifulsoup4 pillow
+pip install requests beautifulsoup4 pillow flask
 ```
 
-## Usage
+## CLI Usage
 
 ### From a product URL
 
@@ -32,7 +39,7 @@ python shop2post_app.py \
   --background-style studio
 ```
 
-### From a local image
+### From a local image with overrides
 
 ```bash
 python shop2post_app.py \
@@ -43,22 +50,50 @@ python shop2post_app.py \
   --background-style gradient
 ```
 
-### Output
+## Browser Usage (HTML Wrapper)
 
-The CLI creates PNGs in the output directory:
+```bash
+python shop2post_app.py --web --host 0.0.0.0 --port 8000
+```
 
-- `ad_instagram_portrait.png` (1080×1350)
-- `ad_instagram_story.png` (1080×1920)
-- `ad_instagram_square.png` (1080×1080)
-- `ad_facebook_landscape.png` (1200×628)
+Then open `http://localhost:8000`.
 
-It also saves `ad_metadata.json` containing:
+The web wrapper supports:
+- Product URL input
+- Optional image upload fallback
+- Title/price overrides
+- Background style selection
+- Inline previews and metadata rendering
 
-- `title`
-- `price`
-- `caption`
-- `hashtags` (platform-specific recommendations)
+## Outputs
 
-## Notes
-- If the product page is inaccessible or yields no usable images, pass `--image-path` to supply a local photo.
-- The background replacement uses a fast, heuristic mask to keep the product intact. For complex backgrounds, provide a transparent PNG for the best result.
+In the chosen output directory:
+
+- `ad_instagram_portrait.png`
+- `ad_instagram_story.png`
+- `ad_instagram_square.png`
+- `ad_facebook_landscape.png`
+- `ad_metadata.json`
+
+Example metadata format:
+
+```json
+{
+  "title": "Example Product",
+  "price": "$99",
+  "caption": "Upgrade your routine with Example Product for $99. Ready to make it yours?",
+  "hashtags": {
+    "instagram": ["#newarrival", "#productdesign", "#onlineshopping", "#musthave", "#innovation"],
+    "tiktok": ["#producttok", "#shopnow", "#trending", "#musthave", "#innovation"],
+    "linkedin": ["#innovation", "#technology", "#ai"],
+    "facebook": ["#newproduct", "#shopping", "#innovation"],
+    "x": ["#newlaunch", "#innovation", "#tech"]
+  }
+}
+```
+
+## Error handling and safety
+- URL validation accepts only `http(s)` URLs.
+- Scraper handles redirects/timeouts and returns actionable errors.
+- Uploads are extension-filtered (`png/jpg/jpeg/webp`) and filename-sanitized.
+- If scraping fails, use `--image-path` (CLI) or upload an image (web mode).
