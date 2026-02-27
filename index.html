@@ -1,0 +1,587 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop2Post - Free AI-Powered Ad Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --background: #0f0f23;
+            --surface: #1a1a2e;
+            --surface-light: #252542;
+            --text: #ffffff;
+            --text-muted: #a1a1aa;
+            --text-dim: #71717a;
+            --border: rgba(255, 255, 255, 0.1);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .gradient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+        }
+
+        .header {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 100; padding: 16px 0;
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header .container {
+            max-width: 1200px; margin: 0 auto; padding: 0 24px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon { font-size: 28px; }
+        .logo-text {
+            font-size: 22px; font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .free-badge {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white; font-size: 11px; font-weight: 700;
+            padding: 4px 10px; border-radius: 100px;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        }
+
+        .nav { display: flex; align-items: center; gap: 24px; }
+        .nav-link {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 14px; font-weight: 500; transition: all 0.3s;
+        }
+        .nav-link:hover { color: var(--text); }
+
+        .nav-link-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white; padding: 10px 20px; border-radius: var(--radius);
+        }
+
+        .hero { padding: 140px 0 80px; }
+        .hero .container {
+            max-width: 1200px; margin: 0 auto; padding: 0 24px;
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 60px; align-items: center;
+        }
+
+        @media (max-width: 1024px) {
+            .hero .container { grid-template-columns: 1fr; text-align: center; }
+        }
+
+        .hero-content { max-width: 540px; }
+
+        .badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: var(--primary-light); padding: 8px 16px;
+            border-radius: 100px; font-size: 13px; font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        .hero-title {
+            font-size: 56px; font-weight: 800;
+            line-height: 1.1; letter-spacing: -0.02em;
+            margin-bottom: 24px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradient 5s ease infinite;
+        }
+
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero-description {
+            font-size: 18px; color: var(--text-muted);
+            line-height: 1.7; margin-bottom: 32px;
+        }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 10px; padding: 14px 28px;
+            font-size: 15px; font-weight: 600;
+            border-radius: var(--radius); border: none;
+            cursor: pointer; transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .api-panel {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 20px;
+        }
+
+        .api-panel h3 {
+            font-size: 14px; font-weight: 600;
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .api-list {
+            display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .api-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 14px;
+            background: var(--surface-light);
+            border-radius: var(--radius);
+            font-size: 13px;
+        }
+
+        .api-name { display: flex; align-items: center; gap: 8px; }
+        .api-status {
+            padding: 4px 10px; border-radius: 100px;
+            font-size: 11px; font-weight: 600;
+        }
+        .api-status.active {
+            background: rgba(16, 185, 129, 0.15); color: var(--success);
+        }
+
+        .generator { padding: 60px 0; }
+        .generator-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-xl); padding: 40px;
+            max-width: 800px; margin: 0 auto;
+        }
+
+        .generator-header {
+            text-align: center; margin-bottom: 32px;
+        }
+
+        .generator-header h2 {
+            font-size: 28px; font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .generator-header p { color: var(--text-muted); }
+
+        .generator-form {
+            display: flex; flex-direction: column; gap: 28px;
+        }
+
+        .form-section {
+            display: flex; flex-direction: column; gap: 16px;
+        }
+
+        .form-label {
+            font-size: 14px; font-weight: 600;
+            color: var(--text);
+        }
+
+        .input-tabs {
+            display: flex; gap: 8px;
+            background: var(--surface-light); padding: 6px;
+            border-radius: var(--radius);
+        }
+
+        .tab-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 12px 20px; background: transparent;
+            border: none; border-radius: var(--radius-sm);
+            color: var(--text-muted); font-size: 14px;
+            font-weight: 500; cursor: pointer;
+            transition: all 0.3s; flex: 1; justify-content: center;
+        }
+
+        .tab-btn.active {
+            background: var(--primary); color: white;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .form-input {
+            width: 100%; padding: 14px 18px;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text); font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .input-hint {
+            font-size: 13px; color: var(--text-dim);
+            margin-top: 6px;
+        }
+
+        .file-upload {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 40px; text-align: center;
+            cursor: pointer; transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .form-row {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        .style-options {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .style-options { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .style-option { cursor: pointer; }
+        .style-option input { display: none; }
+
+        .style-card {
+            padding: 16px; background: var(--surface-light);
+            border: 2px solid transparent;
+            border-radius: var(--radius);
+            text-align: center; transition: all 0.3s;
+        }
+
+        .style-option input:checked + .style-card {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .style-preview {
+            width: 100%; aspect-ratio: 1;
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+        }
+
+        .style-preview.studio { background: linear-gradient(135deg, #f5f5f5, #dcdcdc); }
+        .style-preview.cafe { background: linear-gradient(135deg, #ffebdc, #c8a08c); }
+        .style-preview.tech { background: linear-gradient(135deg, #0a2850, #1e5a8c); }
+        .style-preview.gradient { background: linear-gradient(135deg, #f0f0ff, #c8d2ff); }
+        .style-preview.luxury { background: linear-gradient(135deg, #2a2a2a, #4a4035); }
+        .style-preview.nature { background: linear-gradient(135deg, #c8e6c9, #a5d6a7); }
+        .style-preview.minimal { background: linear-gradient(135deg, #fafafa, #e0e0e0); }
+
+        .style-name {
+            display: block; font-size: 14px;
+            font-weight: 600; color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .style-desc { font-size: 12px; color: var(--text-dim); }
+
+        .api-toggle {
+            display: flex; align-items: center;
+            gap: 12px; padding: 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--radius);
+        }
+
+        .api-toggle input[type="checkbox"] {
+            width: 20px; height: 20px;
+            accent-color: var(--success);
+        }
+
+        .api-toggle label {
+            font-size: 14px; cursor: pointer;
+        }
+
+        .api-toggle .note {
+            font-size: 12px; color: var(--text-dim);
+            margin-left: auto;
+        }
+
+        .footer {
+            padding: 40px 0; border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer p { color: var(--text-dim); font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="gradient-bg"></div>
+
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">
+                <span class="logo-icon">📸</span>
+                <span class="logo-text">Shop2Post</span>
+                <span class="free-badge">100% Free</span>
+            </a>
+            <nav class="nav">
+                <a href="#generate" class="nav-link nav-link-primary">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <span class="badge">🚀 AI-Powered with Free APIs</span>
+                <h1 class="hero-title">
+                    Generate Ads with<br>
+                    <span class="gradient-text">Free AI Tools</span>
+                </h1>
+                <p class="hero-description">
+                    Create stunning social media ads using completely free AI APIs. 
+                    No subscriptions, no credit cards - just powerful image generation.
+                </p>
+                <a href="#generate" class="btn btn-primary">
+                    <span>Start Creating Free</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+
+            <div class="api-panel">
+                <h3>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Free APIs Status
+                </h3>
+                <div class="api-list">
+                    <div class="api-item">
+                        <span class="api-name"><span>🎨</span> Pollinations.ai (Backgrounds)</span>
+                        <span class="api-status active">✓ Unlimited</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-name"><span>✂️</span> remove.bg (Optional)</span>
+                        <span class="api-status active">✓ 50/mo free</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-name"><span>⚡</span> ClipDrop (Optional)</span>
+                        <span class="api-status active">✓ 100/day free</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="generator" id="generate">
+        <div class="container">
+            <div class="generator-card">
+                <div class="generator-header">
+                    <h2>Create Your Ad Images</h2>
+                    <p>Using free AI APIs - no credit card required!</p>
+                </div>
+
+                <form class="generator-form">
+                    <div class="form-section">
+                        <label class="form-label">Product Source</label>
+                        <div class="input-tabs">
+                            <button type="button" class="tab-btn active" data-tab="url">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                                </svg>
+                                Product URL
+                            </button>
+                            <button type="button" class="tab-btn" data-tab="upload">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                Upload Image
+                            </button>
+                        </div>
+
+                        <div class="tab-content active" id="url-tab">
+                            <input type="url" name="url" placeholder="https://example.com/product" class="form-input">
+                            <span class="input-hint">We'll extract product images automatically</span>
+                        </div>
+
+                        <div class="tab-content" id="upload-tab">
+                            <div class="file-upload">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                                <p style="color: var(--text); font-weight: 500; margin-bottom: 4px;">Drag & drop your image here</p>
+                                <p style="color: var(--text-dim); font-size: 13px;">or click to browse (PNG, JPG, WEBP)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Product Title (optional)</label>
+                            <input type="text" name="title" placeholder="e.g., Wireless Headphones" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Price (optional)</label>
+                            <input type="text" name="price" placeholder="e.g., $49.99" class="form-input">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Background Style</label>
+                        <div class="style-options">
+                            <label class="style-option">
+                                <input type="radio" name="background_style" value="studio" checked>
+                                <div class="style-card">
+                                    <div class="style-preview studio"></div>
+                                    <span class="style-name">Studio</span>
+                                    <span class="style-desc">Clean</span>
+                                </div>
+                            </label>
+                            <label class="style-option">
+                                <input type="radio" name="background_style" value="cafe">
+                                <div class="style-card">
+                                    <div class="style-preview cafe"></div>
+                                    <span class="style-name">Cafe</span>
+                                    <span class="style-desc">Warm</span>
+                                </div>
+                            </label>
+                            <label class="style-option">
+                                <input type="radio" name="background_style" value="tech">
+                                <div class="style-card">
+                                    <div class="style-preview tech"></div>
+                                    <span class="style-name">Tech</span>
+                                    <span class="style-desc">Modern</span>
+                                </div>
+                            </label>
+                            <label class="style-option">
+                                <input type="radio" name="background_style" value="gradient">
+                                <div class="style-card">
+                                    <div class="style-preview gradient"></div>
+                                    <span class="style-name">Gradient</span>
+                                    <span class="style-desc">Soft</span>
+                                </div>
+                            </label>
+                            <label class="style-option">
+                                <input type="radio" name="background_style" value="luxury">
+                                <div class="style-card">
+                                    <div class="style-preview luxury"></div>
+                                    <span class="style-name">Luxury</span>
+                                    <span class="style-desc">Premium</span>
+                                </div>
+                            </label>
+                            <label class="style-option">
+                                <input type="radio" name="background_style" value="nature">
+                                <div class="style-card">
+                                    <div class="style-preview nature"></div>
+                                    <span class="style-name">Nature</span>
+                                    <span class="style-desc">Organic</span>
+                                </div>
+                            </label>
+                            <label class="style-option">
+                                <input type="radio" name="background_style" value="minimal">
+                                <div class="style-card">
+                                    <div class="style-preview minimal"></div>
+                                    <span class="style-name">Minimal</span>
+                                    <span class="style-desc">Simple</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="api-toggle">
+                        <input type="checkbox" name="use_api_bg" id="use_api_bg" checked>
+                        <label for="use_api_bg">
+                            <strong>Use AI-generated backgrounds</strong> (Pollinations.ai - completely free!)
+                        </label>
+                        <span class="note">Recommended</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                        Generate Free Ad Images
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Made with ❤️ using free AI APIs | Shop2Post 2025</p>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === `${tabId}-tab`) content.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
